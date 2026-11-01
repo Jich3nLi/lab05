@@ -9,7 +9,12 @@
  * Use fseek to move the file position. Don't read the whole file.
  */
 void read_bitmap_metadata(FILE *image, int *pixel_array_offset, int *width, int *height) {
-
+    fseek(image, 10, SEEK_SET);
+    fread(pixel_array_offset, sizeof(int), 1, image);
+    fseek(image, 18, SEEK_SET);
+    fread(width, sizeof(int), 1, image);
+    fseek(image, 22, SEEK_SET);
+    fread(height, sizeof(int), 1, image);
 }
 
 /*
@@ -30,7 +35,19 @@ void read_bitmap_metadata(FILE *image, int *pixel_array_offset, int *width, int 
  * more efficient.
  */
 struct pixel **read_pixel_array(FILE *image, int pixel_array_offset, int width, int height) {
-    // TODO: Complete this function
+    struct pixel **pixels = malloc(height * sizeof(struct pixel *));
+
+    for (int i = 0; i < height; i++) {
+        pixels[i] = malloc(width * sizeof(struct pixel));
+    }
+
+    fseek(image, pixel_array_offset, SEEK_SET);
+
+    for (int i = 0; i < height; i++) {
+        fread(pixels[i], sizeof(struct pixel), width, image);
+    }
+
+    return pixels;
 }
 
 
